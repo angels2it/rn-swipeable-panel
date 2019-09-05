@@ -9,14 +9,26 @@ const FULL_HEIGHT = Dimensions.get('window').height;
 const FULL_WIDTH = Dimensions.get('window').width;
 const CONTAINER_HEIGHT = FULL_HEIGHT - 100;
 
+const SMALL_HEIGHT = FULL_HEIGHT - 300; 
+const MEDIUM_HEIGHT = FULL_HEIGHT - FULL_HEIGHT*0.18;
+const LARGE_HEIGHT = FULL_HEIGHT - 700;
+
 export default class SwipeablePanel extends React.Component {
 	static propTypes = {
 		isActive: PropTypes.bool.isRequired,
 		onClose: PropTypes.func,
 		fullWidth: PropTypes.bool,
 		onPressCloseButton: PropTypes.func,
-		noBackgroundOpacity: PropTypes.bool
+		noBackgroundOpacity: PropTypes.bool,
+		largeHeight: PropTypes.number
 	};
+
+	get largeHeight () {
+		if(this.props.largeHeight > 0) {
+			return this.props.largeHeight;
+		}
+		return LARGE_HEIGHT
+	}
 
 	constructor(props) {
 		super(props);
@@ -32,13 +44,15 @@ export default class SwipeablePanel extends React.Component {
 		this._panResponder = PanResponder.create({
 			onStartShouldSetPanResponder: (evt, gestureState) => true,
 			onPanResponderGrant: (evt, gestureState) => {
-				if (this.state.status == 1) this.pan.setOffset({ x: this.pan.x._value, y: FULL_HEIGHT - 400 });
-				else if (this.state.status == 2) this.pan.setOffset({ x: this.pan.x._value, y: 0 });
+				console.log('grant')
+				if (this.state.status == 1) this.pan.setOffset({ x: this.pan.x._value, y: SMALL_HEIGHT });
+				else if (this.state.status == 2) this.pan.setOffset({ x: this.pan.x._value, y: this.largeHeight });
 				this.pan.setValue({ x: 0, y: 0 });
 			},
 			onPanResponderMove: (evt, gestureState) => {
 				const currentTop = this.pan.y._offset + gestureState.dy;
-				if (currentTop > 0) this.pan.setValue({ x: 0, y: gestureState.dy });
+				if ( this.pan.y._value < 0 &&  this.pan.y._offset === this.largeHeight) ;
+				else if (currentTop > 0) this.pan.setValue({ x: 0, y: gestureState.dy });
 			},
 			onPanResponderRelease: (evt, { vx, vy }) => {
 				this.pan.flattenOffset();
@@ -76,31 +90,31 @@ export default class SwipeablePanel extends React.Component {
 
 	_animateToLargePanel = () => {
 		Animated.spring(this.pan, {
-			toValue: { x: 0, y: 0 },
+			toValue: { x: 0, y: this.largeHeight },
 			easing: Easing.bezier(0.05, 1.35, 0.2, 0.95),
 			duration: 200,
 			useNativeDriver: true
 		}).start();
 		this.setState({ canScroll: true, status: 2 });
-		this.oldPan = { x: 0, y: 0 };
+		this.oldPan = { x: 0, y: this.largeHeight };
 	};
 
 	_animateToSmallPanel = () => {
 		Animated.spring(this.pan, {
-			toValue: { x: 0, y: FULL_HEIGHT - 400 },
+			toValue: { x: 0, y: SMALL_HEIGHT },
 			easing: Easing.bezier(0.05, 1.35, 0.2, 0.95),
 			duration: 300,
 			useNativeDriver: true
 		}).start();
 		this.setState({ status: 1 });
-		this.oldPan = { x: 0, y: FULL_HEIGHT - 400 };
+		this.oldPan = { x: 0, y: SMALL_HEIGHT };
 	};
 
-	openLarge = () => {
-		this.setState({ showComponent: true, status: 2, canScroll: true });
+	openLarge = async () => {
+		await this.setState({ showComponent: true, status: 2, canScroll: true });
 		Animated.parallel([
 			Animated.timing(this.pan, {
-				toValue: { x: 0, y: 0 },
+				toValue: { x: 0, y: this.largeHeight },
 				easing: Easing.bezier(0.05, 1.35, 0.2, 0.95),
 				duration: 500,
 				useNativeDriver: true
@@ -112,14 +126,14 @@ export default class SwipeablePanel extends React.Component {
 				useNativeDriver: true
 			}).start()
 		]);
-		this.oldPan = { x: 0, y: 0 };
+		this.oldPan = { x: 0, y: this.largeHeight };
 	};
 
 	openDetails = () => {
 		this.setState({ showComponent: true, status: 1 });
 		Animated.parallel([
 			Animated.timing(this.pan, {
-				toValue: { x: 0, y: FULL_HEIGHT - 400 },
+				toValue: { x: 0, y: SMALL_HEIGHT },
 				easing: Easing.bezier(0.05, 1.35, 0.2, 0.95),
 				duration: 500,
 				useNativeDriver: true
@@ -131,7 +145,7 @@ export default class SwipeablePanel extends React.Component {
 				useNativeDriver: true
 			}).start()
 		]);
-		this.oldPan = { x: 0, y: FULL_HEIGHT - 400 };
+		this.oldPan = { x: 0, y: SMALL_HEIGHT };
 	};
 
 	closeDetails = (isCloseButtonPress) => {
@@ -212,7 +226,6 @@ const SwipeablePanelStyles = StyleSheet.create({
 		transform: [ { translateY: FULL_HEIGHT - 100 } ],
 		display: 'flex',
 		flexDirection: 'column',
-		backgroundColor: 'white',
 		bottom: 0,
 		borderRadius: 20,
 		shadowColor: '#000',
