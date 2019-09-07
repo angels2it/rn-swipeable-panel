@@ -16,7 +16,7 @@ const BarStyles = StyleSheet.create({
 		alignItems: 'center'
 	},
 	bar: {
-		width: '30%',
+		width: '10%',
 		height: 6,
 		borderRadius: 5,
 		marginTop: 10,

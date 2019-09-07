@@ -24,7 +24,8 @@ export default class SwipeablePanel extends React.Component {
 		smallHeight: PropTypes.number,
 		smallState: PropTypes.bool,
 		onSmall: PropTypes.func,
-		onLarge: PropTypes.func
+		onLarge: PropTypes.func,
+		showBar: PropTypes.bool
 	};
 
 	get largeHeight () {
@@ -195,6 +196,21 @@ export default class SwipeablePanel extends React.Component {
 		}, this.state.status == 2 ? 450 : 250);
 	};
 
+	hideDetails = () => {
+		Animated.parallel([
+			Animated.timing(this.pan, {
+				toValue: { x: 0, y: FULL_HEIGHT },
+				easing: Easing.linear,
+				duration: this.state.status == 2 ? 500 : 300,
+				useNativeDriver: true
+			}).start(),
+		]);
+
+		setTimeout(() => {
+			this.setState({ showComponent: true, canScroll: false, status: 0 });
+		}, this.state.status == 2 ? 450 : 250);
+	};
+
 	onPressCloseButton = () => {
 		this._animateClosingAndOnCloseProp(true);
 	};
@@ -210,6 +226,7 @@ export default class SwipeablePanel extends React.Component {
 					{ opacity, backgroundColor: noBackgroundOpacity ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.5)' }
 				]}
 			>
+				{this.props.background}
 				<Animated.View
 					style={[
 						SwipeablePanelStyles.container,
