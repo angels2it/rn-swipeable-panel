@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 const FULL_HEIGHT = Dimensions.get('window').height;
 const FULL_WIDTH = Dimensions.get('window').width;
-const CONTAINER_HEIGHT = FULL_HEIGHT - 100;
+const CONTAINER_HEIGHT = FULL_HEIGHT - 50;
 
 const SMALL_HEIGHT = FULL_HEIGHT - 300; 
 const MEDIUM_HEIGHT = FULL_HEIGHT - FULL_HEIGHT*0.18;
@@ -29,7 +29,10 @@ export default class SwipeablePanel extends React.Component {
 
 	get largeHeight () {
 		if(this.props.largeHeight > 0) {
-			return FULL_HEIGHT - this.props.largeHeight;
+			if(FULL_HEIGHT > this.props.largeHeight) {
+				return FULL_HEIGHT - this.props.largeHeight;
+			}
+			return FULL_HEIGHT - CONTAINER_HEIGHT;
 		}
 		return FULL_HEIGHT - LARGE_HEIGHT;
 	}
@@ -239,7 +242,7 @@ const SwipeablePanelStyles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		width: FULL_WIDTH,
-		height: FULL_HEIGHT
+		height: FULL_HEIGHT,
 	},
 	container: {
 		position: 'absolute',
@@ -249,7 +252,6 @@ const SwipeablePanelStyles = StyleSheet.create({
 		display: 'flex',
 		flexDirection: 'column',
 		bottom: 0,
-		borderRadius: 20,
 		shadowColor: '#000',
 		shadowOffset: {
 			width: 0,
