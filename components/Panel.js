@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, TouchableHighlight, Animated, Dimensions, PanResponder, Easing } from 'react-native';
+import { StyleSheet, ScrollView, TouchableHighlight, Animated, Dimensions, PanResponder, Easing, TouchableWithoutFeedback } from 'react-native';
 import { Bar } from './Bar';
 import { Close } from './Close';
 
@@ -9,8 +9,8 @@ const FULL_HEIGHT = Dimensions.get('window').height;
 const FULL_WIDTH = Dimensions.get('window').width;
 const CONTAINER_HEIGHT = FULL_HEIGHT - 50;
 
-const SMALL_HEIGHT = FULL_HEIGHT - 300; 
-const MEDIUM_HEIGHT = FULL_HEIGHT - FULL_HEIGHT*0.18;
+const SMALL_HEIGHT = FULL_HEIGHT - 300;
+const MEDIUM_HEIGHT = FULL_HEIGHT - FULL_HEIGHT * 0.18;
 const LARGE_HEIGHT = FULL_HEIGHT - 100;
 
 export default class SwipeablePanel extends React.Component {
@@ -28,9 +28,9 @@ export default class SwipeablePanel extends React.Component {
 		showBar: PropTypes.bool
 	};
 
-	get largeHeight () {
-		if(this.props.largeHeight > 0) {
-			if(FULL_HEIGHT > this.props.largeHeight) {
+	get largeHeight() {
+		if (this.props.largeHeight > 0) {
+			if (FULL_HEIGHT > this.props.largeHeight) {
 				return FULL_HEIGHT - this.props.largeHeight;
 			}
 			return FULL_HEIGHT - CONTAINER_HEIGHT;
@@ -38,14 +38,14 @@ export default class SwipeablePanel extends React.Component {
 		return FULL_HEIGHT - LARGE_HEIGHT;
 	}
 
-	get smallHeight () {
-		if(this.props.smallHeight > 0) {
+	get smallHeight() {
+		if (this.props.smallHeight > 0) {
 			return FULL_HEIGHT - this.props.smallHeight;
 		}
 		return SMALL_HEIGHT
 	}
 
-	get status () {
+	get status() {
 		return this.state.status;
 	}
 
@@ -69,7 +69,7 @@ export default class SwipeablePanel extends React.Component {
 			},
 			onPanResponderMove: (evt, gestureState) => {
 				const currentTop = this.pan.y._offset + gestureState.dy;
-				if ( this.pan.y._value < 0 &&  this.pan.y._offset === this.largeHeight) ;
+				if (this.pan.y._value < 0 && this.pan.y._offset === this.largeHeight);
 				else if (currentTop > 0) this.pan.setValue({ x: 0, y: gestureState.dy });
 			},
 			onPanResponderRelease: (evt, { vx, vy }) => {
@@ -81,7 +81,7 @@ export default class SwipeablePanel extends React.Component {
 				if (this.state.status == 2) {
 					if (0 < absDistance && absDistance < 100) this._animateToLargePanel();
 					else if (100 < absDistance && absDistance < CONTAINER_HEIGHT - 200) {
-						if(this.props.smallState === false) {
+						if (this.props.smallState === false) {
 							this._animateClosingAndOnCloseProp();
 						} else {
 							this._animateToSmallPanel();
@@ -97,7 +97,7 @@ export default class SwipeablePanel extends React.Component {
 		});
 	}
 
-	componentDidMount = () => {};
+	componentDidMount = () => { };
 
 	componentDidUpdate(prevProps, prevState) {
 		if (prevProps.isActive != this.props.isActive) {
@@ -217,7 +217,7 @@ export default class SwipeablePanel extends React.Component {
 
 	render() {
 		const { showComponent, opacity } = this.state;
-		const { noBackgroundOpacity } = this.props;
+		const { noBackgroundOpacity, onBackdropPress, useNativeDriver } = this.props;
 
 		return showComponent ? (
 			<Animated.View
@@ -226,6 +226,19 @@ export default class SwipeablePanel extends React.Component {
 					{ opacity, backgroundColor: noBackgroundOpacity ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.5)' }
 				]}
 			>
+				{!this.props.background &&
+					<TouchableWithoutFeedback onPress={onBackdropPress}>
+						<Animated.View
+							ref={ref => (this.backdropRef = ref)}
+							useNativeDriver={useNativeDriver}
+							style={[
+								SwipeablePanelStyles.background,
+							]}
+						>
+							{this.props.background}
+						</Animated.View>
+					</TouchableWithoutFeedback>
+				}
 				{this.props.background}
 				<Animated.View
 					style={[
@@ -237,14 +250,14 @@ export default class SwipeablePanel extends React.Component {
 				>
 					<Bar />
 					{this.props.onPressCloseButton && <Close onPress={this.onPressCloseButton} />}
-					<ScrollView contentContainerStyle={SwipeablePanelStyles.scroll} style={{flex: 1}}>
+					<ScrollView contentContainerStyle={SwipeablePanelStyles.scroll} style={{ flex: 1 }}>
 						{this.state.canScroll ? (
 							<TouchableHighlight>
 								<React.Fragment>{this.props.children}</React.Fragment>
 							</TouchableHighlight>
 						) : (
-							this.props.children
-						)}
+								this.props.children
+							)}
 					</ScrollView>
 				</Animated.View>
 			</Animated.View>
@@ -265,7 +278,7 @@ const SwipeablePanelStyles = StyleSheet.create({
 		position: 'absolute',
 		height: CONTAINER_HEIGHT,
 		width: FULL_WIDTH - 50,
-		transform: [ { translateY: FULL_HEIGHT - 100 } ],
+		transform: [{ translateY: FULL_HEIGHT - 100 }],
 		display: 'flex',
 		flexDirection: 'column',
 		bottom: 0,
@@ -279,11 +292,11 @@ const SwipeablePanelStyles = StyleSheet.create({
 		elevation: 1,
 		zIndex: 2
 	},
-	scroll: { 
-		width: '100%', 
-		backgroundColor: 'white', 
-		flexGrow: 1, 
+	scroll: {
+		width: '100%',
+		backgroundColor: 'white',
+		flexGrow: 1,
 		borderTopLeftRadius: 24,
-		borderTopRightRadius: 24 
+		borderTopRightRadius: 24
 	}
 });
