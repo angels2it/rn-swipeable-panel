@@ -1,20 +1,30 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import { Dimensions, PixelRatio, StatusBar } from 'react-native';
+import ExtraDimensions from 'react-native-extra-dimensions-android';
+const FULL_HEIGHT = Dimensions.get("window").height;
+let screenWidth = Dimensions.get('window').width;
+const navHeight = ExtraDimensions.getSoftMenuBarHeight();
+const width100 = PixelRatio.roundToNearestPixel(screenWidth);
 
-export const Close = ({ onBack, onNext, caption }) => {
+export const Close = ({ onBack, onNext, caption, largeHeight }) => {
+  var extHeight = (FULL_HEIGHT - 50 - largeHeight);
   return (
     <View
       style={{
         flexDirection: "row",
-        backgroundColor: "red",
         position: "absolute",
-        bottom: 150,
-        left: 40,
-        right: 40,
-        display: "flex",
-        justifyContent: "center",
-		alignItems: "center",
-		zIndex: 3,
+        backgroundColor: 'white',
+        height: 127,
+        paddingBottom: 47,
+        paddingTop: 10,
+        bottom: navHeight + (extHeight > 0 ? extHeight : 0),
+        paddingHorizontal: 30,
+        justifyContent: "space-between",
+        alignItems: "center",
+        zIndex: 3,
+        flex: 1,
+        width: width100
       }}
     >
       <TouchableOpacity onPress={onBack} style={CloseStyles.closeButton}>
@@ -26,7 +36,7 @@ export const Close = ({ onBack, onNext, caption }) => {
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={onNext} style={CloseStyles.nextButton}>
-        <Text style={{ color: "white", alignSelf: "center", fontSize: 20 }}>
+        <Text style={{ color: "white", alignSelf: "center", fontSize: 15 }}>
           {caption}
         </Text>
       </TouchableOpacity>
@@ -36,8 +46,6 @@ export const Close = ({ onBack, onNext, caption }) => {
 
 const CloseStyles = StyleSheet.create({
   closeButton: {
-    position: "absolute",
-    left: 0,
     width: 50,
     height: 50,
     borderRadius: 12,
@@ -47,23 +55,19 @@ const CloseStyles = StyleSheet.create({
     shadowOffset: {
       width: 1,
       height: 1
-	},
-	elevation: 1,
+    },
+    elevation: 1,
     shadowOpacity: 0.7,
     shadowRadius: 1.0
   },
   nextButton: {
-    position: "absolute",
-    right: 0,
-    width: 250,
     height: 50,
+    width: width100 - 130,
     borderRadius: 12,
-    position: "absolute",
     justifyContent: "center",
     backgroundColor: "#3370bc"
   },
   iconLine: {
-    position: "absolute",
     width: 18,
     height: 2,
     borderRadius: 2,

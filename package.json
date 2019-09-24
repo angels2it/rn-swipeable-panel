@@ -31,7 +31,9 @@
 		"url": "https://github.com/enesozturk/rn-swipeable-panel/issues"
 	},
 	"homepage": "https://github.com/enesozturk/rn-swipeable-panel",
-	"files": [ "components" ],
+	"files": [
+		"components"
+	],
 	"author": "Enes Ozturk",
 	"contributors": [
 		{
@@ -44,6 +46,7 @@
 		"metro-react-native-babel-preset": "^0.54.1"
 	},
 	"dependencies": {
-		"prop-types": "^15.7.2"
+		"prop-types": "^15.7.2",
+		"react-native-extra-dimensions-android": "^1.2.5"
 	}
 }
