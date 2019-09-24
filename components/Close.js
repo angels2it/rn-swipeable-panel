@@ -7,8 +7,9 @@ let screenWidth = Dimensions.get('window').width;
 const navHeight = ExtraDimensions.getSoftMenuBarHeight();
 const width100 = PixelRatio.roundToNearestPixel(screenWidth);
 
-export const Close = ({ onBack, onNext, caption, largeHeight }) => {
+export const Close = ({ onBack, onNext, caption, largeHeight, actionColor }) => {
   var extHeight = (FULL_HEIGHT - 50 - largeHeight);
+  const bgColor = actionColor != null ? actionColor : '#3370bc';
   return (
     <View
       style={{
@@ -35,7 +36,7 @@ export const Close = ({ onBack, onNext, caption, largeHeight }) => {
           style={[CloseStyles.iconLine, { transform: [{ rotateZ: "135deg" }] }]}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={onNext} style={CloseStyles.nextButton}>
+      <TouchableOpacity onPress={onNext} style={[CloseStyles.nextButton, { backgroundColor: bgColor }]}>
         <Text style={{ color: "white", alignSelf: "center", fontSize: 15 }}>
           {caption}
         </Text>

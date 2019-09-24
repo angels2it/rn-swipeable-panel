@@ -299,6 +299,7 @@ export default class SwipeablePanel extends React.Component {
 							onBack={this.props.onBack}
 							onNext={this.props.onNext}
 							caption={this.props.caption}
+							actionColor={this.props.actionColor}
 						/>
 					)}
 				</Animated.View>
